@@ -1,0 +1,146 @@
+program ::= statement_list
+statement_list ::= statement_list line 
+                 | line
+
+line ::= statement newline 
+       | statement
+
+statement ::= return 
+            | break 
+            | function 
+            | at_stmt 
+            | while_loop 
+            | from_loop 
+            | for_loop 
+            | if_else_stmt 
+            | assignment 
+            | expr
+
+param_list ::= param_list ',' String 
+             | String
+
+arg_list ::= arg_list ',' expr 
+           | expr
+            
+function ::= 'def' String '(' param_list ')' indented_block 
+           | 'def' String '(' ')' indented_block
+
+function_call ::= '/\w+/' '(' arg_list ')' 
+                | '/\w+/' '(' ')'
+
+at_stmt ::= 'at' abs_time indented_block
+
+from_loop ::= 'from' abs_time 'to' abs_time 'each' rel_time indented_block 
+            | 'from' abs_time 'to' abs_time indented_block
+
+for_loop ::= 'for' rel_time 'each' rel_time indented_block 
+           | 'for' rel_time indented_block 
+           | 'for' assignment ',' comparison ',' assignment indented_block
+
+rel_time ::= '/\d+h/' '/\d+m/' '/\d+s/' 
+           | '/\d+h/' '/\d+m/' 
+           | '/\d+h/' '/\d+s/' 
+           | '/\d+m/' '/\d+s/' 
+           | '/\d+h/' 
+           | '/\d+m/' 
+           | '/\d+s/'
+
+abs_time ::= Abs_time_token
+
+while_loop ::= 'while' boolean_expr 'each' rel_time indented_block 
+             | 'while' boolean_expr indented_block
+
+if_else_stmt ::= if_stmt elsif_stmt else_stmt 
+               | if_stmt elsif_stmt 
+               | if_stmt else_stmt 
+               | if_stmt
+
+if_stmt ::= 'if' boolean_expr indented_block
+
+elsif_stmt ::= 'elsif' boolean_expr indented_block elsif_stmt 
+             | 'elsif' boolean_expr indented_block
+
+else_stmt ::= 'else' indented_block
+
+indented_block ::= newline indent statement_list newline dedent 
+                 | newline indent statement_list dedent 
+                 | newline indent statement_list
+
+assignment ::= var '[' arithmetic_expr ']' '=' expr 
+             | var '=' expr 
+             | var shorthand_op expr
+
+shorthand_op ::= '+=' 
+               | '-=' 
+               | '*=' 
+               | '/='
+
+expr ::= nil 
+       | input 
+       | list 
+       | list_shorthand_add 
+       | boolean_expr 
+       | String_token
+
+break ::= 'break'
+
+return ::= 'return' expr
+
+nil ::= 'nil'
+
+input ::= 'input'
+
+list ::= '[' arg_list ']' 
+       | '[' ']'
+
+list_shorthand_add ::= var '<<' expr
+
+boolean_expr ::= boolean_expr 'or' boolean_term 
+               | boolean_term
+
+boolean_term ::= boolean_term 'and' boolean_factor 
+               | boolean_factor
+
+boolean_factor ::= 'not' boolean_factor 
+                 | 'true' 
+                 | 'false' 
+                 | comparison
+
+comparison ::= arithmetic_expr comp_op arithmetic_expr 
+             | arithmetic_expr
+
+comp_op ::= '<' 
+          | '<=' 
+          | '>' 
+          | '>=' 
+          | '==' 
+          | '!='
+
+arithmetic_expr ::= arithmetic_expr '+' arithmetic_term 
+                  | arithmetic_expr '-' arithmetic_term 
+                  | arithmetic_term
+
+arithmetic_term ::= arithmetic_term '*' arithmetic_factor 
+                  | arithmetic_term '/' arithmetic_factor 
+                  | arithmetic_factor
+
+arithmetic_factor ::= arithmetic_primary '**' arithmetic_factor 
+                    | arithmetic_primary
+
+arithmetic_primary ::= '(' boolean_expr ')' 
+                     | integer 
+                     | float 
+                     | list_var 
+                     | function_call 
+                     | var
+
+list_var ::= list_var '[' arithmetic_expr ']' 
+           | var '[' arithmetic_expr ']'
+
+var ::= String
+
+integer ::= '-' Integer 
+          | Integer
+          
+float ::= '-' Float 
+        | Float
